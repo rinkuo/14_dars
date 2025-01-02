@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}O'quvchi Ma'lumotlari - Maktab CRM{% endblock %}
+
+{% block content %}
+<main>
+    <h1>{{ student.first_name }} {{ student.last_name }} - O'quvchi Ma'lumotlari</h1>
+
+    <div class="student-details">
+        <div class="student-info">
+            <h2>O'quvchi Haqida</h2>
+            <p><strong>ID:</strong> {{ student.id }}</p>
+            <p><strong>Guruh:</strong> {{ student.group.name }}</p>
+            <p><strong>Tug'ilgan sana:</strong> {{ student.birth_date }}</p>
+            <p><strong>Telefon:</strong> {{ student.phone_number }}</p>
+            <p><strong>Manzil:</strong> {{ student.address }}</p>
+            <div class="student-image">
+                <img src="{{ student.images.url }}" alt="{{ student.first_name }} {{ student.last_name }} rasmi" class="img-fluid">
+            </div>
+        </div>
+
+        <div class="student-actions">
+            <a href="{% url 'students:update' student.id %}" class="btn"><i class="fas fa-edit"></i> Tahrirlash</a>
+            <a href="{% url 'students:delete' student.id %}" class="btn btn-danger"><i class="fas fa-trash"></i> O'chirish</a>
+        </div>
+    </div>
+
+    <h3>O'qituvchilar Ro'yxati</h3>
+    <div class="teachers-table">
+        <table id="teachersTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Ism</th>
+                    <th>Familiya</th>
+                    <th>Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in student.group.teachers.all %}
+                <tr>
+                    <td>{{ teacher.id }}</td>
+                    <td>{{ teacher.first_name }}</td>
+                    <td>{{ teacher.last_name }}</td>
+                    <td>
+                        <a href="{% url 'teachers:detail' teacher.id %}" class="btn btn-sm"><i class="fas fa-eye"></i> Ko'rish</a>
+                        <a href="{% url 'teachers:update' teacher.id %}" class="btn btn-sm"><i class="fas fa-edit"></i> Tahrirlash</a>
+                        <a href="{% url 'teachers:delete' teacher.id %}" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i> O'chirish</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+{% endblock %}

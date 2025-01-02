@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Guruh Ma'lumotlari - Maktab CRM{% endblock %}
+
+{% block content %}
+<main>
+    <section class="group-details">
+        <h1>Guruh ma'lumotlari: {{ group.group_name }}</h1>
+
+        <div class="group-info">
+            <h2>Guruh Tafsilotlari</h2>
+            <ul>
+                <li><strong>ID:</strong> {{ group.id }}</li>
+                <li><strong>O'quvchilar soni:</strong> {{ student_count }}</li>
+                <li><strong>Sinf rahbari:</strong>
+                    {% if group.class_leader %}
+                        {{ group.class_leader.first_name }} {{ group.class_leader.last_name }}
+                    {% else %}
+                        Ma'lum emas
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+
+        <div class="group-students">
+            <h3>O'quvchilar ro'yxati</h3>
+            {% if group.students.all %}
+            <table class="students-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ism</th>
+                        <th>Familiya</th>
+                        <th>Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in group.students.all %}
+                    <tr>
+                        <td>{{ student.id }}</td>
+                        <td>{{ student.first_name }}</td>
+                        <td>{{ student.last_name }}</td>
+                        <td>
+                            <a href="{% url 'students:detail' student.id %}" class="btn btn-info" aria-label="Ko'rish {{ student.first_name }} {{ student.last_name }}">
+                                <i class="fas fa-eye"></i> Ko'rish
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>Guruhda o'quvchilar mavjud emas.</p>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <a href="{% url 'groups:update' group.id %}" class="btn btn-edit" aria-label="Guruhni tahrirlash">
+                <i class="fas fa-edit"></i> Tahrirlash
+            </a>
+            <a href="{% url 'groups:delete' group.id %}" class="btn btn-danger" aria-label="Guruhni o'chirish">
+                <i class="fas fa-trash"></i> O'chirish
+            </a>
+        </div>
+    </section>
+</main>
+{% endblock %}

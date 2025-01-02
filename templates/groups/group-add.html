@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Guruh yaratish | Maktab CRM{% endblock %}
+
+{% block content %}
+    <h1 class="page-title">Guruh yaratish</h1>
+    <form method="POST" class="form-container">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="groupName">Guruh nomi:</label>
+            <input type="text" id="groupName" name="group_name" placeholder="Guruh nomini kiriting" required class="form-control">
+        </div>
+
+        <div class="form-group">
+            <label for="classTeacher">Sinf rahbari:</label>
+            <select id="classTeacher" name="class_leader" required class="form-control">
+                <option value="">Sinf rahbarini tanlang</option>
+                {% for teacher in teachers %}
+                    <option value="{{ teacher.id }}">{{ teacher.first_name }} {{ teacher.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="students">O'quvchilar:</label>
+            <select id="students" name="students" multiple required class="form-control">
+                {% for student in students %}
+                    <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if error_message %}
+            <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn"><i class="fas fa-save"></i> Saqlash</button>
+            <a href="{% url 'groups:group_list' %}" class="btn btn-secondary"><i class="fas fa-times"></i> Bekor qilish</a>
+        </div>
+    </form>
+{% endblock %}

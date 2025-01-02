@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Maktab CRM - Yangi Fan Qo'shish{% endblock %}
+
+{% block content %}
+    <h1>Yangi Fan Qo'shish</h1>
+    <div class="form-container">
+        <form action="{% url 'subjects:subject_create' %}" method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="name">Fan nomi:</label>
+                <input type="text" id="name" name="name" class="form-control" placeholder="Fan nomini kiriting" required>
+            </div>
+            <div class="form-group">
+                <label for="teachers">O'qituvchilarni tanlang:</label>
+                <select id="teachers" name="teachers" class="form-control" multiple>
+                    {% for teacher in teachers %}
+                        <option value="{{ teacher.id }}">{{ teacher.first_name }} {{ teacher.last_name }}</option>
+                    {% endfor %}
+                </select>
+                <small class="form-text">Ctrl tugmasini bosib bir nechta o'qituvchini tanlashingiz mumkin.</small>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Saqlash</button>
+                <a href="{% url 'subjects:subject_list' %}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Bekor qilish</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

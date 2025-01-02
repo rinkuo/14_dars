@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% load static %}  <!-- Add this line to load static files -->
+
+{% block title %}Maktab CRM - O'qituvchi ma'lumotlari{% endblock %}
+
+{% block content %}
+    <h1>O'qituvchi ma'lumotlari</h1>
+    <div class="teacher-details">
+        <div class="teacher-info">
+            <!-- Teacher Image (with default fallback) -->
+            {% if teacher.images %}
+                <img src="{{ teacher.images.url }}" alt="O'qituvchi rasmi" class="teacher-image">
+            {% else %}
+                <img src="{% static 'default-teacher-image.jpg' %}" alt="O'qituvchi rasmi" class="teacher-image">
+            {% endif %}
+            <h2>{{ teacher.first_name }} {{ teacher.last_name }}</h2>
+            <p>ID: <span>{{ teacher.id }}</span></p>
+            <p>Fan: <span>{{ teacher.subject.name }}</span></p>
+            <p>Telefon: <span>{{ teacher.phone_number }}</span></p>
+            <p>Email: <span>{{ teacher.email }}</span></p>
+            <p>Ish tajribasi: <span>{{ teacher.work_experience }} yil</span></p>
+        </div>
+        <div class="teacher-groups">
+            <h3>O'qitadigan guruhlar</h3>
+            <ul>
+                {% for group in teacher.groups.all %}
+                    <li>{{ group.name }}</li>
+                {% empty %}
+                    <li>Hozirda guruhlar mavjud emas.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="actions">
+        <a href="{{ teacher.get_update_url }}" class="btn"><i class="fas fa-edit"></i> Tahrirlash</a>
+        <a href="{{ teacher.get_delete_url }}" class="btn btn-danger"><i class="fas fa-trash"></i> O'chirish</a>
+    </div>
+{% endblock %}
