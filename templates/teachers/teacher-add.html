@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
-{% block title %}Maktab CRM - Yangi O'qituvchi yaratish{% endblock %}
+{% block title %}Maktab CRM - {% if teacher.pk %}O'qituvchi ma'lumotlarini yangilash{% else %}Yangi O'qituvchi yaratish{% endif %}{% endblock %}
 
 {% block content %}
-    <h1>Yangi O'qituvchi yaratish</h1>
+    <h1>{% if teacher.pk %}O'qituvchi ma'lumotlarini yangilash{% else %}Yangi O'qituvchi yaratish{% endif %}</h1>
     {% if errors %}
         <ul class="error-messages">
             {% for error in errors %}
@@ -49,7 +49,7 @@
             <input type="file" id="images" name="images" accept="image/*">
         </div>
         <div class="actions">
-            <button type="submit" class="btn"><i class="fas fa-save"></i> Saqlash</button>
+            <button type="submit" class="btn"><i class="fas fa-save"></i> {% if teacher.pk %}Yangilash{% else %}Saqlash{% endif %}</button>
             <a href="{% url 'teachers:teacher_list' %}" class="btn btn-secondary"><i class="fas fa-times"></i> Bekor qilish</a>
         </div>
     </form>

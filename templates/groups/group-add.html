@@ -1,42 +1,63 @@
 {% extends 'base.html' %}
 
-{% block title %}Guruh yaratish | Maktab CRM{% endblock %}
+{% block title %}
+    Guruh {% if group %}Tahrirlash{% else %}Qo'shish{% endif %}
+{% endblock %}
 
 {% block content %}
-    <h1 class="page-title">Guruh yaratish</h1>
-    <form method="POST" class="form-container">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="groupName">Guruh nomi:</label>
-            <input type="text" id="groupName" name="group_name" placeholder="Guruh nomini kiriting" required class="form-control">
+    <section class="form-section">
+        <h1 class="form-title">Guruh {% if group %}Tahrirlash{% else %}Qo'shish{% endif %}</h1>
+        <div class="form-container">
+            <form
+                action="{% if group %}{% url 'groups:update' group.id %}{% else %}{% url 'groups:group_create' %}{% endif %}"
+                method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="group_name">Guruh nomi:</label>
+                    <input
+                        type="text"
+                        id="group_name"
+                        name="group_name"
+                        class="form-control"
+                        placeholder="Guruh nomini kiriting"
+                        value="{{ group_name|default_if_none:'' }}"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label for="class_leader">Sinf rahbari:</label>
+                    <select id="class_leader" name="class_leader" class="form-control" required>
+                        <option value="" disabled {% if not group or not group.class_leader %}selected{% endif %}>Rahbarni tanlang</option>
+                        {% for teacher in teachers %}
+                            <option
+                                value="{{ teacher.id }}"
+                                {% if group and group.class_leader and group.class_leader.id == teacher.id %}selected{% endif %}>
+                                {{ teacher.first_name }} {{ teacher.last_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="students">O'quvchilarni tanlang (ixtiyoriy):</label>
+                    <select id="students" name="students" class="form-control" multiple>
+                        {% for student in students %}
+                            <option
+                                value="{{ student.id }}"
+                                {% if group and student in group.students.all %}selected{% endif %}>
+                                {{ student.first_name }} {{ student.last_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <small class="form-text">Ctrl tugmasini bosib bir nechta o'quvchini tanlashingiz mumkin.</small>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Saqlash
+                    </button>
+                    <a href="{% url 'groups:group_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Bekor qilish
+                    </a>
+                </div>
+            </form>
         </div>
-
-        <div class="form-group">
-            <label for="classTeacher">Sinf rahbari:</label>
-            <select id="classTeacher" name="class_leader" required class="form-control">
-                <option value="">Sinf rahbarini tanlang</option>
-                {% for teacher in teachers %}
-                    <option value="{{ teacher.id }}">{{ teacher.first_name }} {{ teacher.last_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label for="students">O'quvchilar:</label>
-            <select id="students" name="students" multiple required class="form-control">
-                {% for student in students %}
-                    <option value="{{ student.id }}">{{ student.first_name }} {{ student.last_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-
-        {% if error_message %}
-            <div class="error-message">{{ error_message }}</div>
-        {% endif %}
-
-        <div class="form-actions">
-            <button type="submit" class="btn"><i class="fas fa-save"></i> Saqlash</button>
-            <a href="{% url 'groups:group_list' %}" class="btn btn-secondary"><i class="fas fa-times"></i> Bekor qilish</a>
-        </div>
-    </form>
+    </section>
 {% endblock %}

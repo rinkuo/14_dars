@@ -24,7 +24,6 @@ def student_list(request):
     ctx = {'students': students}
     return render(request, 'students/students-list.html', ctx)
 
-
 def student_create(request):
     groups = Group.objects.all()
     if request.method == 'POST':
@@ -36,55 +35,61 @@ def student_create(request):
         phone_number = request.POST.get('phone_number')
         address = request.POST.get('address')
 
-        if first_name and last_name and group_id and birth_date and images and phone_number and address:
-            try:
-                group = Group.objects.get(pk=group_id)
-            except Group.DoesNotExist:
-                ctx = {'groups': groups, 'error': "Invalid group selected."}
-                return render(request, 'students/student-add.html', ctx)
+        if not all([first_name, last_name, group_id, birth_date, images, phone_number, address]):
+            ctx = {'groups': groups, 'error': "All fields are required."}
+            return render(request, 'students/student-add.html', ctx)
 
-            Student.objects.create(
-                first_name=first_name,
-                last_name=last_name,
-                group=group,
-                birth_date=birth_date,
-                images=images,
-                phone_number=phone_number,
-                address=address,
-            )
-            return redirect('students:student_list')
+        try:
+            group = Group.objects.get(pk=group_id)
+        except Group.DoesNotExist:
+            ctx = {'groups': groups, 'error': "Invalid group selected."}
+            return render(request, 'students/student-add.html', ctx)
+
+        Student.objects.create(
+            first_name=first_name,
+            last_name=last_name,
+            group=group,
+            birth_date=birth_date,
+            images=images,
+            phone_number=phone_number,
+            address=address,
+        )
+        return redirect('students:student_list')
     ctx = {'groups': groups}
     return render(request, 'students/student-add.html', ctx)
-
 
 def student_update(request, pk):
     student = get_object_or_404(Student, pk=pk)
     groups = Group.objects.all()
+
     if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
+        full_name = request.POST.get('fullName')
         group_id = request.POST.get('group')
         birth_date = request.POST.get('birth_date')
-        images = request.FILES.get('images')
-        phone_number = request.POST.get('phone_number')
+        phone = request.POST.get('phone')
         address = request.POST.get('address')
+        photo = request.FILES.get('photo')
 
-        if first_name and last_name and group_id and birth_date and images and phone_number and address:
-            try:
-                group = Group.objects.get(pk=group_id)
-            except Group.DoesNotExist:
-                ctx = {'student': student, 'groups': groups, 'error': "Invalid group selected."}
-                return render(request, 'students/student-add.html', ctx)
+        if not full_name or not group_id or not birth_date or not phone or not address:
+            ctx = {'student': student, 'groups': groups, 'error': "All fields are required."}
+            return render(request, 'students/student-add.html', ctx)
 
-            student.first_name = first_name
-            student.last_name = last_name
-            student.group = group
-            student.birth_date = birth_date
-            student.images = images
-            student.phone_number = phone_number
-            student.address = address
-            student.save()
-            return redirect(student.get_detail_url())
+        try:
+            student.first_name, student.last_name = full_name.split(' ', 1)
+        except ValueError:
+            ctx = {'student': student, 'groups': groups, 'error': "Invalid full name format."}
+            return render(request, 'students/student-add.html', ctx)
+
+        student.group = Group.objects.get(id=group_id)
+        student.birth_date = birth_date
+        student.phone_number = phone
+        student.address = address
+        if photo:
+            student.images = photo
+        student.save()
+
+        return redirect('students:student_list')
+
     ctx = {'student': student, 'groups': groups}
     return render(request, 'students/student-add.html', ctx)
 

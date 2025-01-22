@@ -1,10 +1,10 @@
 from django.db import models
-from groups.base_model import BaseModel
 from django.shortcuts import reverse
-
+from groups.base_model import BaseModel
 
 class Subject(BaseModel):
     name = models.CharField(max_length=100)
+    teachers = models.ManyToManyField('teachers.Teacher', related_name='assigned_subjects', blank=True)
 
     def get_detail_url(self):
         return reverse('subjects:detail', args=[self.pk])
@@ -17,3 +17,7 @@ class Subject(BaseModel):
 
     def __str__(self):
         return self.name
+
+    @property
+    def teachers_count(self):
+        return self.teachers.count()

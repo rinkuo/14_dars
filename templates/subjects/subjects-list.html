@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% block title %}Fanlar ro'yxati{% endblock %}
+
 {% block content %}
   <h1>Fanlar ro'yxati</h1>
   <div class="actions">
@@ -45,17 +47,9 @@
     </tbody>
   </table>
 
-  <div class="pagination">
-    {% if page_obj.has_previous %}
-      <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-secondary">
-        <i class="fas fa-chevron-left"></i> Oldingi
-      </a>
-    {% endif %}
-    <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}
-      <a href="?page={{ page_obj.next_page_number }}" class="btn btn-secondary">
-        Keyingi <i class="fas fa-chevron-right"></i>
-      </a>
-    {% endif %}
-  </div>
+<div class="pagination">
+        <a href="#" class="btn btn-secondary"><i class="fas fa-chevron-left"></i> Oldingi</a>
+        <span id="currentPage">1</span>
+        <a href="#" class="btn btn-secondary">Keyingi <i class="fas fa-chevron-right"></i></a>
+    </div>
 {% endblock %}

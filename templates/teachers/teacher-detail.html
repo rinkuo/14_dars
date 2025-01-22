@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% load static %}  <!-- Add this line to load static files -->
+{% load static %}
 
-{% block title %}Maktab CRM - O'qituvchi ma'lumotlari{% endblock %}
+{% block title %}O'qituvchi Ma'lumotlari{% endblock %}
 
 {% block content %}
-    <h1>O'qituvchi ma'lumotlari</h1>
+    <h1>{{ teacher.first_name }} {{ teacher.last_name }} - O'qituvchi Ma'lumotlari</h1>
+
     <div class="teacher-details">
         <div class="teacher-info">
-            <!-- Teacher Image (with default fallback) -->
             {% if teacher.images %}
                 <img src="{{ teacher.images.url }}" alt="O'qituvchi rasmi" class="teacher-image">
             {% else %}
@@ -21,15 +21,18 @@
             <p>Email: <span>{{ teacher.email }}</span></p>
             <p>Ish tajribasi: <span>{{ teacher.work_experience }} yil</span></p>
         </div>
+
         <div class="teacher-groups">
-            <h3>O'qitadigan guruhlar</h3>
-            <ul>
-                {% for group in teacher.groups.all %}
-                    <li>{{ group.name }}</li>
-                {% empty %}
-                    <li>Hozirda guruhlar mavjud emas.</li>
-                {% endfor %}
-            </ul>
+            <h3>O'qituvchi guruhlari</h3>
+            {% if teacher.groups.all %}
+                <ul>
+                    {% for group in teacher.groups.all %}
+                        <li>{{ group.group_name }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>Hozirda guruhlar mavjud emas.</p>
+            {% endif %}
         </div>
     </div>
 

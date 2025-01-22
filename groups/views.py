@@ -1,8 +1,9 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, redirect
 from .models import Group
-from django.db import IntegrityError
 from teachers.models import Teacher
 from students.models import Student
+from django.db import IntegrityError
 
 def group_list(request):
     groups = Group.objects.all()
@@ -27,9 +28,10 @@ def group_create(request):
                     group_name=group_name
                 )
 
-                for student_id in student_ids:
-                    student = Student.objects.get(pk=student_id)
-                    group.students.add(student)
+                if student_ids:
+                    for student_id in student_ids:
+                        student = Student.objects.get(pk=student_id)
+                        group.students.add(student)
 
                 return redirect('groups:group_list')
             except IntegrityError:
@@ -41,7 +43,6 @@ def group_create(request):
         'error_message': error_message
     }
     return render(request, 'groups/group-add.html', ctx)
-
 
 def group_update(request, pk):
     group = get_object_or_404(Group, pk=pk)
@@ -60,7 +61,12 @@ def group_update(request, pk):
                 group.class_leader = class_leader
                 group.group_name = group_name
                 group.save()
-                group.students.set(student_ids)
+
+                if student_ids:
+                    group.students.set(student_ids)
+                else:
+                    group.students.clear()
+
                 return redirect(group.get_detail_url())
             except Teacher.DoesNotExist:
                 error_message = "The selected teacher does not exist."
@@ -72,6 +78,7 @@ def group_update(request, pk):
         'error_message': error_message,
     }
     return render(request, 'groups/group-add.html', ctx)
+
 
 def group_detail(request, pk):
     group = get_object_or_404(Group, pk=pk)

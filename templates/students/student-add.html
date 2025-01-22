@@ -1,49 +1,104 @@
 {% extends 'base.html' %}
 
-{% block title %}Yangi O'quvchi Qo'shish - Maktab CRM{% endblock %}
+{% block title %}
+    O'quvchi {% if student %}Tahrirlash{% else %}Yaratish{% endif %}
+{% endblock %}
 
 {% block content %}
-<main>
-    <h1>Yangi O'quvchi Qo'shish</h1>
-    <form action="" method="POST" enctype="multipart/form-data" id="createStudentForm">
+<section class="form-section">
+    <h1 class="form-title">O'quvchi {% if student %}Tahrirlash{% else %}Yaratish{% endif %}</h1>
+
+    <form
+        method="POST"
+        enctype="multipart/form-data"
+        action="{% if student %}{% url 'students:update' student.id %}{% else %}{% url 'students:student_create' %}{% endif %}">
         {% csrf_token %}
+
         <div class="form-group">
             <label for="first_name">Ism:</label>
-            <input type="text" id="first_name" name="first_name" placeholder="Ismni kiriting" required>
+            <input
+                type="text"
+                id="first_name"
+                name="first_name"
+                value="{{ student.first_name|default:'' }}"
+                placeholder="Ismingizni kiriting"
+                required>
         </div>
+
         <div class="form-group">
             <label for="last_name">Familiya:</label>
-            <input type="text" id="last_name" name="last_name" placeholder="Familiyani kiriting" required>
+            <input
+                type="text"
+                id="last_name"
+                name="last_name"
+                value="{{ student.last_name|default:'' }}"
+                placeholder="Familiyangizni kiriting"
+                required>
         </div>
-        <div class="form-group">
-            <label for="group">Guruh:</label>
-            <select id="group" name="group" required>
-                <option value="" disabled selected>Guruhni tanlang</option>
-                {% for group in groups %}
-                    <option value="{{ group.id }}">{{ group.group_name }}</option>
-                {% endfor %}
-            </select>
-        </div>
+
+       <div class="form-group">
+                <label for="group">Guruh:</label>
+                <select id="group" name="group" required>
+                    <option value="" disabled {% if not student or not student.group %}selected{% endif %}>Guruhni tanlang</option>
+                    {% for group in groups %}
+                        <option value="{{ group.id }}"
+                                {% if student and student.group.id == group.id %}selected{% endif %}>
+                            {{ group }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
         <div class="form-group">
             <label for="birth_date">Tug'ilgan sana:</label>
-            <input type="date" id="birth_date" name="birth_date" required>
+            <input
+                type="date"
+                id="birth_date"
+                name="birth_date"
+                value="{{ student.birth_date|date:'Y-m-d'|default:'' }}"
+                required>
         </div>
+
         <div class="form-group">
-            <label for="images">Rasm:</label>
-            <input type="file" id="images" name="images" accept="image/*" required>
+            <label for="phone_number">Telefon:</label>
+            <input
+                type="tel"
+                id="phone_number"
+                name="phone_number"
+                value="{{ student.phone_number|default:'' }}"
+                placeholder="+998 90 123 45 67"
+                required>
         </div>
-        <div class="form-group">
-            <label for="phone_number">Telefon raqami:</label>
-            <input type="tel" id="phone_number" name="phone_number" placeholder="+998901234567" required>
-        </div>
+
         <div class="form-group">
             <label for="address">Manzil:</label>
-            <textarea id="address" name="address" placeholder="Manzilni kiriting" rows="4" required></textarea>
+            <textarea
+                id="address"
+                name="address"
+                placeholder="Manzilingizni kiriting"
+                required>{{ student.address|default:'' }}</textarea>
         </div>
-        <div class="actions">
-            <button type="submit" class="btn"><i class="fas fa-save"></i> Saqlash</button>
-            <a href="{% url 'students:student_list' %}" class="btn btn-secondary"><i class="fas fa-times"></i> Bekor qilish</a>
+
+        <div class="form-group">
+            <label for="images">Rasm:</label>
+            {% if student and student.images %}
+                <div class="photo-preview">
+                    <img src="{{ student.images.url }}" alt="Student Photo" width="100">
+                </div>
+            {% endif %}
+            <input type="file" id="images" name="images" accept="image/*">
+        </div>
+
+        {% if error %}
+            <div class="form-error">
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Saqlash</button>
+            <a href="{% url 'students:student_list' %}" class="btn btn-secondary">Bekor qilish</a>
         </div>
     </form>
-</main>
+</section>
 {% endblock %}
